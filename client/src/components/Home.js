@@ -35,7 +35,7 @@ function Home() {
         })
         // await z.wait()
         console.log("Inside fetch get")
-        // displayPolls()
+        displayPolls()
         // setIsTrue(true)
 
     }

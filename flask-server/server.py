@@ -90,13 +90,13 @@ def members2():
         output_strings.append(output_string)
             
     final_string = '\n'.join(output_strings)
-    opneAifuncall = openAICall(final_string) #==============================================================THis is main
-    print( "opneAifuncall:- ---------", opneAifuncall) #==============================================================THis is main
+    # opneAifuncall = openAICall(final_string) #==============================================================THis is main
+    # print( "opneAifuncall:- ---------", opneAifuncall) #==============================================================THis is main
 
     newFinalString = final_string
     print("newFinalString ---- -- -- -", newFinalString)
     # return [{"tweets": tweets}, {"tweetsData": tweetsData},{"AIConclusion":AIConslusion}, {"tweetsV0tes":colletingData}, {"chatGPTAns":chatGPTAns}]
-    return [{"tweets": tweets}, {"tweetsData": tweetsData},{"AIConclusion":AIConslusion}, {"opneAifuncall":opneAifuncall}, {"chatGPTAns":chatGPTAns}]
+    return [{"tweets": tweets}, {"tweetsData": tweetsData},{"AIConclusion":AIConslusion}, {"opneAifuncall":"opneAifuncall"}, {"chatGPTAns":chatGPTAns}]
 
 
 @app.route('/add_todo', methods=["POST", "GET"])
