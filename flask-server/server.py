@@ -13,7 +13,7 @@ query = "crypto trading card_name:poll2choice_text_only OR card_name:poll3choice
 tweets =[]
 tweetsData=[]
 AIConslusion=[]
-limit = 10
+limit = 50
 
 userInputs =[]
 userQuestion=[]

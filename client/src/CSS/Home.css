@@ -44,3 +44,20 @@
     padding-left: 15px;
     padding-bottom: 15px; */
 }
+
+.getPollsBtn{
+
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.MainContainer{
+    margin-top: 5%;
+    
+}
+
+.MainContainer input{
+    margin: 10px;
+    padding-bottom: 20px;
+    
+}
