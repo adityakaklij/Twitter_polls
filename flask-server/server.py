@@ -49,6 +49,7 @@ def members2():
 
                     tweets.append(str(tweet.id))
                     tweetsData.append([tweet.content, tweet.card.options ])
+
                     # if((len(tweets) != 0)):
                     #     tweet.replace(str(tweet.id))
                     #     tweetsData.replace([tweet.content, tweet.card.options ])
@@ -67,18 +68,24 @@ def members2():
             else:
                 tweets.append(str(tweet.id))
                 tweetsData.append([tweet.content, tweet.card.options ])
+                # print("tweet.card.options", tweet.card.options)
                 print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
          
     output_strings = []
+    totalVoteCount = 0
+    totalPollOptionCount  = 0
     for i, (description, options) in enumerate(tweetsData, start=1):
         option_strings = []
         vote_count=[]
         for j, option in enumerate(options, start=1):
+            totalPollOptionCount += 1
             option_string = f"{j}] {option.label} ({option.count})"
                     # print("option Count :- ", f"{j} {option.count}")
             z = f"{j} {option.count}"
+            totalVoteCount = totalVoteCount +  option.count
             vote_count.append(option.count)
+            # print("vote_count",vote_count)
                     
             option_strings.append(option_string)
         options_string = ', '.join(option_strings)
@@ -91,19 +98,19 @@ def members2():
 
     newFinalString = final_string
     print("newFinalString ---- -- -- -", newFinalString)
-    return [{"tweets": tweets}, {"tweetsData": tweetsData},{"AIConclusion":AIConslusion}, {"opneAifuncall":"opneAifuncall"}, {"chatGPTAns":chatGPTAns}]
+    return [{"tweets": tweets}, {"tweetsData": tweetsData},{"AIConclusion":AIConslusion}, {"opneAifuncall":"opneAifuncall"}, {"chatGPTAns":chatGPTAns}, {"totalVoteCount":totalVoteCount, "totalPollCount": limit, "totalPollOptionCount": totalPollOptionCount}]
 
 
 @app.route('/add_todo', methods=["POST", "GET"])
 def add_todo():
     print("Inside the post from front end")
     todo_data = request.get_json()
-    print("todo_data")
-    print("todo_data.userInput:- ",todo_data['userInput'])
-    print("todo_data.userQuestion:- ",todo_data['userQuestion'])
-    print("todo_data.userStartDate:- ",todo_data['userStartDate'])
-    print("todo_data.userEndDate:- ",todo_data['userEndDate'])
-    print("todo_data.user Selected Polls:- ",todo_data['userPollsType'])
+    # print("todo_data")
+    # print("todo_data.userInput:- ",todo_data['userInput'])
+    # print("todo_data.userQuestion:- ",todo_data['userQuestion'])
+    # print("todo_data.userStartDate:- ",todo_data['userStartDate'])
+    # print("todo_data.userEndDate:- ",todo_data['userEndDate'])
+    # print("todo_data.user Selected Polls:- ",todo_data['userPollsType'])
     userInputs.clear()
     userQuestion.clear()
     userStartDate.clear()
@@ -117,14 +124,13 @@ def add_todo():
     userQuestion.append(todo_data['userQuestion'])
     userPolls.append(todo_data['userPollsType'])
     
-    print("userInputs", userInputs)
+    # print("userInputs", userInputs)
 
     return 'Done', 201
 
 
 def openAICall(userQue):
     print("We are Inside the openAICall function")
-    print("OpenAi working properly, just print the userInput question and polls output here")
     print("Uestion:- ", userQue)
     model_engin = "text-davinci-003"
     

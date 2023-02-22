@@ -5,7 +5,6 @@ import { Dna } from  'react-loader-spinner'
 import '../CSS/Home.css'
 
 let newArray = []
-// var data = [{}]
 function Home() {
 
     
@@ -14,6 +13,7 @@ function Home() {
     
     let priorDate = new Date(new Date().setDate(StartDate.getDate() - 20));
     let priorDateToString = priorDate.toISOString().slice(0, 10)
+    // Loader loding
     const[isLoaderTrue, setIsLoaderTrue] = useState(false)
 
     const [userInput, setUserInput] = useState()
@@ -26,9 +26,15 @@ function Home() {
     const [testIds, setTestIds] = useState([])
     const [isTrue, setIsTrue] = useState(false)
     const [responseFromOpenAI, serResponseFromOpenAI] = useState()
-    const [userPollsType, setUserPollType] = useState("Both")
-        
+    // const [userPollsType, setUserPollType] = useState("Both")
+    const [userPollsType, setUserPollType] = useState("Completed")
+    const [totalVotes, setTotalVotes] = useState()
+    const [totalPollCount, setTotalPollCount] = useState()
+    const [totalPollOptionCount, setTotalPollOptionCount] = useState()
 
+    // Only true when the polls are rendered! it's for open AI and vote count
+    const [isPollsRender, setIsPollRender] = useState(false)
+        
         useEffect(() => {
             if(isTrue){
                 // setTestIds([])
@@ -40,17 +46,18 @@ function Home() {
         try {
             let z = await fetch("/members2").then(res => res.json()).then(data => {
                 setData(data)
-                console.log("data:-", data) //$$$$$$$$$$$$$$$$
+                // console.log("data:-", data) //$$$$$$$$$$$$$$$$
     
             })
             console.log("Inside fetch get")
+            await displayPolls()
             setIsTrue(true)
-            displayPolls()
             // setIsLoaderTrue(false)
 
         } catch (error) {
-            // alert("Somthing went wrong :( \n Please try later!")
+            alert("Somthing went wrong :( \n Please try later!")
             console.log(error)
+            setIsLoaderTrue(false)
         }
         
 
@@ -58,6 +65,7 @@ function Home() {
 
     const sendData = async() => {
 
+        setIsPollRender(false)
         try {
             setData([{}])
             setTestIds([])
@@ -77,6 +85,9 @@ function Home() {
     
                 callServer()
             }
+            else{
+                alert("Something went Wrong!")
+            }
             
         } catch (error) {
             alert("Somthing went wrong :( \n Please try later!")
@@ -89,10 +100,17 @@ function Home() {
     const displayPolls = async() => {
 
         try {
+            setIsPollRender(true)
         // console.log("data:- ",data) $$$$$$$$$$$$$$$$
         // console.log("data.tweets:- ",data[0]) $$$$$$$$$$$$$$$$
         newArray.push(data[0].tweets)
         serResponseFromOpenAI(` Response From OpneAI: \n ${data[3].opneAifuncall}`)
+        // console.log(` totalPollCount:-  ${data[5].totalPollCount}`)
+        setTotalVotes(data[5].totalVoteCount)
+        setTotalPollCount(data[5].totalPollCount)
+        setTotalPollOptionCount(data[5].totalPollOptionCount)
+
+
         // console.log("Data of 2 ", data[3].opneAifuncall) $$$$$$$$$$$$$$$$
         // setTestIds([])
         setTestIds(data[0].tweets)
@@ -134,7 +152,8 @@ function Home() {
 
         <div className='MainContainer'>
         <input className='userInput' type="text" onChange={getInput} placeholder='Enter keywords' />
-        <input className='userInput' type="text" onChange={getQuestion} placeholder='Enter your question' />
+        {/* **********Questoin for openAI ************** */}
+        {/* <input className='userInput' type="text" onChange={getQuestion} placeholder='Enter your question' /> */}
 
         <button className='getPollsBtn btn-primary mx-5' onClick={sendData}>Get Polls</button>
         {/* <button className='btn-primary my-5' onClick={displayPolls}>displayPolls</button> */}
@@ -166,13 +185,22 @@ function Home() {
      {/* <p className='ResponsePara my-5'> {responseFromOpenAI}</p> */}
      
 
-
+        <div > 
+            {isPollsRender ? 
+                <div className='ResponsePara my-5'>  
+                    <p>Total Votes:- {totalVotes} </p> 
+                    <p>Total Polls:- {totalPollCount}</p>    
+                    <p>Total Options:- {totalPollOptionCount}</p>    
+                </div> : null}
+        </div>
+        
      
-        <div  className='tweetsContainer'>
-            { isLoaderTrue? <Dna
+        <div className='tweetsContainer'>
+           
+            { isLoaderTrue? <Dna className="LoaderClass"
             visible={true}
-            height="80"
-            width="80"
+            height="120"
+            width="360%"
             ariaLabel="dna-loading"
             wrapperStyle={{}}
             wrapperClass="dna-wrapper"
@@ -182,24 +210,6 @@ function Home() {
                 </div>
             ))}
         </div>
-
-{/* Working properly!! */}
-
-{/*      
-        <div  className='tweetsContainer'>
-            { isLoaderTrue? <Dna
-            visible={true}
-            height="80"
-            width="80"
-            ariaLabel="dna-loading"
-            wrapperStyle={{}}
-            wrapperClass="dna-wrapper"
-        /> :  testIds.map ((testIds) => (
-                <div  className='card'>
-                    <TwitterTweetEmbed  tweetId={testIds}/>
-                </div>
-            ))}
-        </div> */}
 
 
     </>
