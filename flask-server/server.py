@@ -37,17 +37,22 @@ def members2():
     print("Inside the Get function!")
 
     # for tweet in sntwitter.TwitterSearchScraper(userInputs[0]+" card_name:poll2choice_text_only OR card_name:poll3choice_text_only OR card_name:poll4choice_text_only OR card_name:poll2choice_image OR card_name:poll3choice_image OR card_name:poll4choice_image").get_items(): # Working
+    
     for tweet in sntwitter.TwitterSearchScraper(userInputs[0]+f" card_name:poll2choice_text_only OR card_name:poll3choice_text_only OR card_name:poll4choice_text_only OR card_name:poll2choice_image OR card_name:poll3choice_image OR card_name:poll4choice_image lang:en until:{userEndDate[0]} since:{userStartDate[0]}").get_items():
 
     
         if (len(tweets) == limit):
             break
         else:
-
             if(userPolls[0] == "Completed"):
                 if(tweet.card.finalResults):
+
                     tweets.append(str(tweet.id))
                     tweetsData.append([tweet.content, tweet.card.options ])
+                    # if((len(tweets) != 0)):
+                    #     tweet.replace(str(tweet.id))
+                    #     tweetsData.replace([tweet.content, tweet.card.options ])
+
                     print("######x########################################")
                 else:
                     print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
