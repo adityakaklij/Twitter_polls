@@ -13,16 +13,15 @@ query = "crypto trading card_name:poll2choice_text_only OR card_name:poll3choice
 tweets =[]
 tweetsData=[]
 AIConslusion=[]
-limit = 50
+limit = 10
 
 userInputs =[]
 userQuestion=[]
 userStartDate=[]
 userEndDate=[]
 chatGPTAns=[]
-pollsDataToChatGPT=[]
 
-colletingData=[]
+userPolls = []
 
 newFinalString=""
 
@@ -38,42 +37,34 @@ def members2():
     print("Inside the Get function!")
 
     # for tweet in sntwitter.TwitterSearchScraper(userInputs[0]+" card_name:poll2choice_text_only OR card_name:poll3choice_text_only OR card_name:poll4choice_text_only OR card_name:poll2choice_image OR card_name:poll3choice_image OR card_name:poll4choice_image").get_items(): # Working
-    # for tweet in sntwitter.TwitterSearchScraper(userInputs[0]+" card_name:poll2choice_text_only OR card_name:poll3choice_text_only OR card_name:poll4choice_text_only OR card_name:poll2choice_image OR card_name:poll3choice_image OR card_name:poll4choice_image until:2023-02-19 since:2023-01-01").get_items():
-    for tweet in sntwitter.TwitterSearchScraper(userInputs[0]+f" card_name:poll2choice_text_only OR card_name:poll3choice_text_only OR card_name:poll4choice_text_only OR card_name:poll2choice_image OR card_name:poll3choice_image OR card_name:poll4choice_image until:{userEndDate[0]} since:{userStartDate[0]}").get_items():
-    # for tweet in sntwitter.TwitterSearchScraper(userInputs[0]+f" card_name:poll2choice_text_only OR card_name:poll3choice_text_only OR card_name:poll4choice_text_only OR card_name:poll2choice_image OR card_name:poll3choice_image OR card_name:poll4choice_image").get_items():
+    for tweet in sntwitter.TwitterSearchScraper(userInputs[0]+f" card_name:poll2choice_text_only OR card_name:poll3choice_text_only OR card_name:poll4choice_text_only OR card_name:poll2choice_image OR card_name:poll3choice_image OR card_name:poll4choice_image lang:en until:{userEndDate[0]} since:{userStartDate[0]}").get_items():
+
     
         if (len(tweets) == limit):
             break
         else:
-            tweets.append(str(tweet.id))
-            # tweetsData.append([ tweet.content, tweet.card.options, tweet.place])
-            tweetsData.append([ tweet.content, tweet.card.options ]) # No need of place as it's giving null values
-            print("##############################################")
-            # print(tweet.content)
-            for i in tweet.card.options:
-                # colletingData.append([{"options":i.label}, {"choice": i.count}])
-                colletingData.append([ {"options":i.label}, {"choice": i.count}])
-                # print("i:- ",i.label, " ",i.count)
-            # print("colletingData",colletingData)
-            # print("##############################################")
-            # print( "tweet.",tweet) 
-            # print( "tweet.content",tweet.content) 
-            # print( "tweet.Is",tweet.id)
-            # print("tweetsData:- ------------",tweetsData)
-            pollsDataToChatGPT.clear()
-            ### Now add the polls data and votes into below array
-            # pollsDataToChatGPT.append()
-            ### Sending, userQuestion, PollData
-            # openAICall(userQuestion[0], pollsDataToChatGPT[0])
 
-
+            if(userPolls[0] == "Completed"):
+                if(tweet.card.finalResults):
+                    tweets.append(str(tweet.id))
+                    tweetsData.append([tweet.content, tweet.card.options ])
+                    print("######x########################################")
+                else:
+                    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
             
+            elif (userPolls[0] == "Active"):
+                if(tweet.card.finalResults == False):
+                    tweets.append(str(tweet.id))
+                    tweetsData.append([tweet.content, tweet.card.options ])
+                    print("######x########################################")
+                else:
+                    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+            else:
+                tweets.append(str(tweet.id))
+                tweetsData.append([tweet.content, tweet.card.options ])
+                print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
-            # print("final_string:----------",final_string)
-            # opneAifuncall = openAICall(final_string)
-            # print( "opneAifuncall:- ---------", opneAifuncall)
-    # opneAifuncall = openAICall(final_string)
-    # print( "opneAifuncall:- ---------", opneAifuncall)
+         
     output_strings = []
     for i, (description, options) in enumerate(tweetsData, start=1):
         option_strings = []
@@ -95,7 +86,6 @@ def members2():
 
     newFinalString = final_string
     print("newFinalString ---- -- -- -", newFinalString)
-    # return [{"tweets": tweets}, {"tweetsData": tweetsData},{"AIConclusion":AIConslusion}, {"tweetsV0tes":colletingData}, {"chatGPTAns":chatGPTAns}]
     return [{"tweets": tweets}, {"tweetsData": tweetsData},{"AIConclusion":AIConslusion}, {"opneAifuncall":"opneAifuncall"}, {"chatGPTAns":chatGPTAns}]
 
 
@@ -108,17 +98,20 @@ def add_todo():
     print("todo_data.userQuestion:- ",todo_data['userQuestion'])
     print("todo_data.userStartDate:- ",todo_data['userStartDate'])
     print("todo_data.userEndDate:- ",todo_data['userEndDate'])
+    print("todo_data.user Selected Polls:- ",todo_data['userPollsType'])
     userInputs.clear()
     userQuestion.clear()
     userStartDate.clear()
     userEndDate.clear()
     tweets.clear()
     tweetsData.clear()
+    userPolls.clear()
     userStartDate.append(todo_data['userStartDate'])
     userEndDate.append(todo_data['userEndDate'])
     userInputs.append(todo_data['userInput'])
     userQuestion.append(todo_data['userQuestion'])
-    # openAICall(todo_data['userQuestion'])
+    userPolls.append(todo_data['userPollsType'])
+    
     print("userInputs", userInputs)
 
     return 'Done', 201

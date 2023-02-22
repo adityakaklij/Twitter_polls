@@ -7,18 +7,25 @@ let newArray = []
 // var data = [{}]
 function Home() {
 
-    const [userInput, setUserInput] = useState()
-    const [userQuestion, setUserQuestion] = useState()
+    
+    let StartDate = new Date()
+    let StartDateToString = StartDate.toISOString().slice(0, 10)
 
-    const [userStartDate, setUserStartDate] = useState()
-    const [userEndDate, setUserEndDate] = useState()
+    let priorDate = new Date(new Date().setDate(StartDate.getDate() - 20));
+    let priorDateToString = priorDate.toISOString().slice(0, 10)
+
+    const [userInput, setUserInput] = useState()
+    const [userQuestion, setUserQuestion] = useState("Question")
+
+    const [userStartDate, setUserStartDate] = useState(priorDateToString)
+    const [userEndDate, setUserEndDate] = useState(StartDateToString)
 
     const [data, setData] = useState([{}])
     const [testIds, setTestIds] = useState([])
     const [isTrue, setIsTrue] = useState(false)
-    // const [responseFromOpenAI, serResponseFromOpenAI] = useState("")
     const [responseFromOpenAI, serResponseFromOpenAI] = useState()
-
+    const [userPollsType, setUserPollType] = useState("Both")
+        
 
         useEffect(() => {
             if(isTrue){
@@ -27,8 +34,6 @@ function Home() {
         }, [isTrue])
     
     const callServer = async() => {
-        // fetch("/members").then(res => res.json()).then(data => {
-
         try {
             let z = await fetch("/members2").then(res => res.json()).then(data => {
                 setData(data)
@@ -47,15 +52,6 @@ function Home() {
 
     }
 
-    const getInput = (e) =>{
-        setUserInput(e.target.value)
-    }
-
-    const getQuestion = (e) =>{
-        setUserQuestion(e.target.value)
-    }
-
-
     const sendData = async() => {
 
         try {
@@ -64,7 +60,8 @@ function Home() {
                 headers: {
                    'Content-Type':"application/json" 
                 },
-                body:JSON.stringify({"userInput":userInput,"userQuestion":userQuestion, "userStartDate":userStartDate, "userEndDate":userEndDate})
+                body:JSON.stringify({"userInput":userInput,"userQuestion":userQuestion, "userStartDate":userStartDate, "userEndDate":userEndDate,
+                                     "userPollsType": userPollsType})
                 // body:({"useInput":userInput,"userQuestion":userQuestion})
     
             })
@@ -95,17 +92,32 @@ function Home() {
         // console.log("data:- [0] ",data[0].tweets) $$$$$$$$$$$$$$$$
     
         } catch (error) {
-            alert("Somthing went wrong :( \n Please try later!")
+            // alert("Somthing went wrong :( \n Please try later!")
+            console.log(error)
         }
         
     }
 
     const startDateInput = (e) =>{
         setUserStartDate(e.target.value)
+        console.log(e.target.value)
     }
-
+    
     const endDateInput = (e) =>{
         setUserEndDate(e.target.value)
+        console.log(e.target.value)
+    }
+
+    const getInput = (e) =>{
+        setUserInput(e.target.value)
+    }
+
+    const getQuestion = (e) =>{
+        setUserQuestion(e.target.value)
+    }
+
+    const getUserDropDown = (e) =>{
+        setUserPollType(e.target.value)
     }
   return (
     
@@ -134,6 +146,15 @@ function Home() {
         <input onChange={endDateInput} type="date"  />
         </div>
      
+
+        <label htmlFor="PollsType">Poll Type &nbsp;</label>
+        <select name="Poll Type" id="PollsType" onChange={getUserDropDown} > Choodr 
+            <option value="Both">Default</option>
+            <option value="Active">Active</option>
+            <option value="Completed">Completed</option>
+            {/* <option value="Both">Both</option> */}
+        </select>
+
      <p className='ResponsePara my-5'> {responseFromOpenAI}</p>
      
 
