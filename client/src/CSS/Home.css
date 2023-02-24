@@ -3,6 +3,7 @@
     grid-template-columns: 23rem 25rem 25rem;
     justify-content: space-around;
     align-items: flex-start;
+    margin-top: 10px;
      
 }
 
@@ -39,14 +40,10 @@
     border: 2px solid rgb(187, 187, 250);
     border-radius: 20px;
     padding: 2% 4% ;
-    /* padding-left: 2%;
-    padding-top: 15px;
-    padding-left: 15px;
-    padding-bottom: 15px; */
 }
 
 .getPollsBtn{
-
+    
     padding: 8px;
     border-radius: 6px;
 }
@@ -76,4 +73,30 @@
     height: 100vh;
 }
 
+.filtersDiv{
+    width: 95%;
+    margin-left: 3%;
+    font-size: 1.1em;
+    /* border: 2px solid rgb(187, 187, 250); */
+    border-radius: 20px;
+    padding: 2% 3% ;
+    float: center;
+}
+ .FiltersPara{
+    padding-right: 83%;
+}
 
+.showFilterBtn{
+    align-items: left;
+    float: right;
+    padding: 10px;
+    margin-right: 6%;
+    border-radius: 10px;
+    margin-top: 8px;
+    /* margin-bottom: 10px; */
+}
+
+.ApplyFilterBtn ,.askAIBtn{
+    padding: 6px;
+    border-radius: 6px;
+}

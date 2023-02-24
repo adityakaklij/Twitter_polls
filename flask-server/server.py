@@ -1,19 +1,34 @@
 import os
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, request
+from flask import Flask, request,render_template
 import snscrape.modules.twitter as sntwitter
 import openai
 
 load_dotenv(find_dotenv())
 openai.api_key = os.getenv("OPEN_AI_API_KEY") 
+
 app = Flask(__name__)
+# app = Flask(__name__, static_url_path='', static_folder='../client/build')
+# app = Flask(__name__, static_folder="./build", static_url_path='/')
+# app = Flask(__name__, static_folder='./build')
+
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# @app.route("/", defaults={'path':''})
+# def serve(path):
+#     return send_from_directory(app.static_folder,'index.html')
 
 query = "crypto trading card_name:poll2choice_text_only OR card_name:poll3choice_text_only OR card_name:poll4choice_text_only OR card_name:poll2choice_image OR card_name:poll3choice_image OR card_name:poll4choice_image"
 
 tweets =[]
 tweetsData=[]
+tweetsData2=[]
 AIConslusion=[]
-limit = 10
+limit = 25
 
 userInputs =[]
 userQuestion=[]
@@ -22,8 +37,10 @@ userEndDate=[]
 chatGPTAns=[]
 
 userPolls = []
+userQuestion2=[]
 
-newFinalString=""
+newFinalString=[]
+
 
 # output_strings = []
 class PollOption:
@@ -31,14 +48,14 @@ class PollOption:
         self.label = label
         self.count = count
 
-# @app.route("/members")
 @app.route("/members2", methods=[ "GET"])
 def members2():
     print("Inside the Get function!")
 
     # for tweet in sntwitter.TwitterSearchScraper(userInputs[0]+" card_name:poll2choice_text_only OR card_name:poll3choice_text_only OR card_name:poll4choice_text_only OR card_name:poll2choice_image OR card_name:poll3choice_image OR card_name:poll4choice_image").get_items(): # Working
     
-    for tweet in sntwitter.TwitterSearchScraper(userInputs[0]+f" card_name:poll2choice_text_only OR card_name:poll3choice_text_only OR card_name:poll4choice_text_only OR card_name:poll2choice_image OR card_name:poll3choice_image OR card_name:poll4choice_image lang:en until:{userEndDate[0]} since:{userStartDate[0]}").get_items():
+    for tweet in sntwitter.TwitterSearchScraper(f"({userInputs[0]})+ card_name:poll2choice_text_only OR card_name:poll3choice_text_only OR card_name:poll4choice_text_only OR card_name:poll2choice_image OR card_name:poll3choice_image OR card_name:poll4choice_image lang:en until:{userEndDate[0]} since:{userStartDate[0]}").get_items():
+    # for tweet in sntwitter.TwitterSearchScraper(f"something + card_name:poll2choice_text_only OR card_name:poll3choice_text_only OR card_name:poll4choice_text_only OR card_name:poll2choice_image OR card_name:poll3choice_image OR card_name:poll4choice_image lang:en until:{userEndDate[0]} since:{userStartDate[0]}").get_items():
 
     
         if (len(tweets) == limit):
@@ -49,6 +66,7 @@ def members2():
 
                     tweets.append(str(tweet.id))
                     tweetsData.append([tweet.content, tweet.card.options ])
+                    tweetsData2.append([tweet.id, tweet.content, tweet.card.options ])
 
                     # if((len(tweets) != 0)):
                     #     tweet.replace(str(tweet.id))
@@ -96,9 +114,11 @@ def members2():
     # opneAifuncall = openAICall(final_string) #==============================================================THis is main
     # print( "opneAifuncall:- ---------", opneAifuncall) #==============================================================THis is main
 
-    newFinalString = final_string
-    print("newFinalString ---- -- -- -", newFinalString)
-    return [{"tweets": tweets}, {"tweetsData": tweetsData},{"AIConclusion":AIConslusion}, {"opneAifuncall":"opneAifuncall"}, {"chatGPTAns":chatGPTAns}, {"totalVoteCount":totalVoteCount, "totalPollCount": limit, "totalPollOptionCount": totalPollOptionCount}]
+    newFinalString.append(final_string)
+    print("newFinalString ---- -- -- -", newFinalString[0])
+    return [{"tweets": tweets}, {"tweetsData": tweetsData},{"AIConclusion":AIConslusion}, {"opneAifuncall":"opneAifuncall"},
+            {"chatGPTAns":chatGPTAns}, {"totalVoteCount":totalVoteCount, "totalPollCount": limit, "totalPollOptionCount": totalPollOptionCount},
+            {"tweetsData2":tweetsData2}]
 
 
 @app.route('/add_todo', methods=["POST", "GET"])
@@ -128,6 +148,28 @@ def add_todo():
 
     return 'Done', 201
 
+@app.route('/askAI', methods=["GET"])
+def askAI():
+    print("Inside the askAI func")
+    # print("newFinalString:- ",newFinalString[0])
+    
+    opneAifuncall = openAICall(userQuestion2[0]) #==============================================================THis is main
+    print( "opneAifuncall:- ---------", opneAifuncall) #==============================================================THis is main?
+    return {"OpenAIResoponse": opneAifuncall}
+    # return {"OpenAIResoponse": userQuestion2[0]}
+
+
+
+@app.route('/askAI2', methods=["POST","GET"])
+def askAI2():
+    print("Inside the askAI2 func")
+    inputFromUser = request.get_json()
+    print("inputFromUser --  --- ", inputFromUser['userQue'])
+    userQuestion2.clear()
+    userQuestion2.append(inputFromUser['userQue'])
+
+    return {"OpenAIResoponse": inputFromUser['userQue']}
+
 
 def openAICall(userQue):
     print("We are Inside the openAICall function")
@@ -135,7 +177,9 @@ def openAICall(userQue):
     model_engin = "text-davinci-003"
     
     # prompt=[f"Analyse following poll data and on basis of this analysis the current situation of the crypto market and crypto conditions \n {userQue}"]
-    prompt=[f"{userQuestion[0]} \n {userQue}"]
+    # prompt=[f"{userQuestion[0]} \n {userQue}"]
+    # prompt=[f" Analysis the following data \n {userQue}"]
+    prompt=[f"{userQue}:- {newFinalString[0]}"]
     
     completion = openai.Completion.create(
         engine=model_engin,

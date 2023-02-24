@@ -29,12 +29,15 @@ function Home() {
     const [data, setData] = useState([{}])
     const [testIds, setTestIds] = useState([])
     const [isTrue, setIsTrue] = useState(false)
-    const [responseFromOpenAI, serResponseFromOpenAI] = useState()
+    const [responseFromOpenAI, setResponseFromOpenAI] = useState()
     // const [userPollsType, setUserPollType] = useState("Both")
     const [userPollsType, setUserPollType] = useState("Completed")
     const [totalVotes, setTotalVotes] = useState()
     const [totalPollCount, setTotalPollCount] = useState()
     const [totalPollOptionCount, setTotalPollOptionCount] = useState()
+
+    const [showFilters, setShowFilter] = useState(false)
+    const [showFilterText, setShowFilterText] = useState("Show Filter")
 
     // Only true when the polls are rendered! it's for open AI and vote count
     const [isPollsRender, setIsPollRender] = useState(false)
@@ -42,8 +45,6 @@ function Home() {
         useEffect(() => {
             if(isTrue){
                 // setTestIds([])
-                setUserInput((selected.join(" OR ")))
-                console.log((selected.join(" OR ")))
                 displayPolls()
             }            
         }, [isTrue, testIds])
@@ -72,8 +73,7 @@ function Home() {
     const sendData = async() => {
 
         setIsPollRender(false)
-        await setUserInput((selected.join(" OR ")))
-        console.log((selected.join(" OR ")))
+        setShowFilter(false)
         try {
             setData([{}])
             setTestIds([])
@@ -87,7 +87,6 @@ function Home() {
                 // body:JSON.stringify({"userInput":userInput,"userQuestion":userQuestion, "userStartDate":userStartDate, "userEndDate":userEndDate,
                 body:JSON.stringify({"userInput":selected.join(" OR "),"userQuestion":userQuestion, "userStartDate":userStartDate, "userEndDate":userEndDate,
                                      "userPollsType": userPollsType})
-                // body:({"useInput":userInput,"userQuestion":userQuestion})
     
             })
             if (response.ok){
@@ -114,7 +113,7 @@ function Home() {
         // console.log("data:- ",data) $$$$$$$$$$$$$$$$
         // console.log("data.tweets:- ",data[0]) $$$$$$$$$$$$$$$$
         newArray.push(data[0].tweets)
-        serResponseFromOpenAI(` Response From OpneAI: \n ${data[3].opneAifuncall}`)
+        // setResponseFromOpenAI(` Response From OpneAI: \n ${data[3].opneAifuncall}`)
         // console.log(` totalPollCount:-  ${data[5].totalPollCount}`)
         setTotalVotes(data[5].totalVoteCount)
         setTotalPollCount(data[5].totalPollCount)
@@ -136,6 +135,67 @@ function Home() {
         
     }
 
+    const askOpenAI = async () => {
+       
+        try {
+            let z = await fetch("/askAI").then(res => res.json()).then(data => {
+                
+                // setData(data)
+                console.log("data:-", data.OpenAIResoponse) //$$$$$$$$$$$$$$$$
+                console.log("Inside the ASK AI func")
+                setResponseFromOpenAI(data.OpenAIResoponse)
+    
+            })
+            console.log("Inside fetch get")
+            
+
+        } catch (error) {
+            alert("Somthing went wrong :( \n Please try later!")
+            console.log(error)
+            setIsLoaderTrue(false)
+        }
+    } 
+
+    const askOpenAI2 = async () => {
+        setIsLoaderTrue(true)
+        try {
+
+            const response = await fetch("/askAI2", {
+                method: "POST",
+                headers: {
+                   'Content-Type':"application/json" 
+                },
+                
+                body:JSON.stringify({ "userQue":userQuestion })
+            })
+            // .then(res=>res.json()).then(data1 => {
+            //     console.log("data1==data1===data1==data1",data1.OpenAIResoponse)
+            // })
+
+            // console.log(response.json)
+
+            let z = await fetch("/askAI").then(res => res.json()).then(data => {
+                
+                // setData(data)
+                setIsLoaderTrue(false)
+                console.log("data:-", data.OpenAIResoponse) //$$$$$$$$$$$$$$$$
+                console.log("Printing it!")
+                setResponseFromOpenAI(data.OpenAIResoponse)
+    
+            })
+            if (response.ok){
+                console.log("Works!")
+            }
+            else{
+                alert("Something went Wrong!")
+            }
+            
+        } catch (error) {
+            alert("Somthing went wrong :( \n Please try later!")
+            console.log(error)
+        }
+    }
+
     const startDateInput = (e) =>{
         setUserStartDate(e.target.value)
         console.log(e.target.value)
@@ -148,9 +208,9 @@ function Home() {
 
     const getInput = (e) =>{
         // setUserInput(e.target.value)
-        console.log(e.target.valu)
-        console.log(selected)
-        setUserInput((selected.join(" OR ")))
+        // console.log(e.target.valu)
+        // console.log(selected)
+        // setUserInput((selected.join(" OR ")))
     }
 
     const getQuestion = (e) =>{
@@ -160,6 +220,11 @@ function Home() {
     const getUserDropDown = (e) =>{
         setUserPollType(e.target.value)
     }
+
+    const showFiltersFun =  () =>{
+        setShowFilterText("H")
+    }
+
   return (
     
     <>
@@ -210,13 +275,68 @@ function Home() {
 
         <div > 
             {isPollsRender ? 
-                <div className='ResponsePara my-5'>  
-                    <p>Total Votes:- {totalVotes} </p> 
-                    <p>Total Polls:- {totalPollCount}</p>    
-                    <p>Total Options:- {totalPollOptionCount}</p>    
-                </div> : null}
+                <div> 
+                    <div className='ResponsePara my-5'>  
+                        <p>Total Votes:- {totalVotes} </p> 
+                        <p>Total Polls:- {totalPollCount}</p>    
+                        <p>Total Options:- {totalPollOptionCount}</p>    
+                    </div> 
+                        <button className='showFilterBtn btn-primary' onClick={() => {setShowFilter(!showFilters)}}>Filter</button> 
+
+
+
+                </div>
+                
+                : null}
         </div>
         
+        <div className='filtersDiv mt-5'>
+            {showFilters ? 
+
+                <div>
+                        <p className='FiltersPara'><u> Filters </u></p>
+                        {/* Dates input */}
+                    <div >
+                        <label > Enter Start Date: &nbsp;</label>
+                        <input onChange={startDateInput} type="date" />
+
+                        <label >&nbsp;&nbsp; Enter End Date: &nbsp;</label>
+                        <input onChange={endDateInput} type="date"  />
+                    </div>
+                        
+                        {/* Polls Type  */}
+                    <div className='my-3'>
+                        <label htmlFor="PollsType">Poll Type &nbsp;</label>
+                        <select name="Poll Type" id="PollsType" onChange={getUserDropDown} > 
+                            <option value="Both">Default</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Active">Active</option>
+                        </select>
+                    </div>
+
+
+                    {/* Remove polls with 0 votes */}
+
+                    <div>
+                        {/* <p> 0 Votes </p> */}
+                    </div>
+
+                    <button className='ApplyFilterBtn btn-primary mx-5' onClick={sendData}>Apply Filter</button>
+                        {/* Ask OpenAI */}
+                    <div>
+                        <p className='FiltersPara'> <u>Ask OpenAI </u>!</p>
+
+                        <div>
+                            <input className='userInput' type="text" onChange={getQuestion} placeholder='Enter your question' />
+                            <button className='askAIBtn btn-primary mx-5' onClick={askOpenAI2}>Ask AI</button>
+                        </div>
+
+                        <p className='ResponsePara my-5'> {responseFromOpenAI}</p>
+                    </div>
+                </div>
+            
+            : null}
+        </div>
      
         <div className='tweetsContainer'>
            
