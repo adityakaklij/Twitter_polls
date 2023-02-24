@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import axios from "axios"
 import { TwitterTweetEmbed } from 'react-twitter-embed';
 import { Dna } from  'react-loader-spinner'
+import { TagsInput } from "react-tag-input-component";
+
 import '../CSS/Home.css'
 
 let newArray = []
@@ -11,10 +13,12 @@ function Home() {
     let StartDate = new Date()
     let StartDateToString = StartDate.toISOString().slice(0, 10)
     
-    let priorDate = new Date(new Date().setDate(StartDate.getDate() - 20));
+    let priorDate = new Date(new Date().setDate(StartDate.getDate() - 100));
     let priorDateToString = priorDate.toISOString().slice(0, 10)
     // Loader loding
     const[isLoaderTrue, setIsLoaderTrue] = useState(false)
+    // For getting input tags
+    const [selected, setSelected] = useState([]);
 
     const [userInput, setUserInput] = useState()
     const [userQuestion, setUserQuestion] = useState("Question")
@@ -38,6 +42,8 @@ function Home() {
         useEffect(() => {
             if(isTrue){
                 // setTestIds([])
+                setUserInput((selected.join(" OR ")))
+                console.log((selected.join(" OR ")))
                 displayPolls()
             }            
         }, [isTrue, testIds])
@@ -46,7 +52,7 @@ function Home() {
         try {
             let z = await fetch("/members2").then(res => res.json()).then(data => {
                 setData(data)
-                // console.log("data:-", data) //$$$$$$$$$$$$$$$$
+                console.log("data:-", data) //$$$$$$$$$$$$$$$$
     
             })
             console.log("Inside fetch get")
@@ -66,16 +72,20 @@ function Home() {
     const sendData = async() => {
 
         setIsPollRender(false)
+        await setUserInput((selected.join(" OR ")))
+        console.log((selected.join(" OR ")))
         try {
             setData([{}])
             setTestIds([])
             setIsLoaderTrue(true)
+            // const response = await fetch("/add_todo", {
             const response = await fetch("/add_todo", {
                 method: "POST",
                 headers: {
                    'Content-Type':"application/json" 
                 },
-                body:JSON.stringify({"userInput":userInput,"userQuestion":userQuestion, "userStartDate":userStartDate, "userEndDate":userEndDate,
+                // body:JSON.stringify({"userInput":userInput,"userQuestion":userQuestion, "userStartDate":userStartDate, "userEndDate":userEndDate,
+                body:JSON.stringify({"userInput":selected.join(" OR "),"userQuestion":userQuestion, "userStartDate":userStartDate, "userEndDate":userEndDate,
                                      "userPollsType": userPollsType})
                 // body:({"useInput":userInput,"userQuestion":userQuestion})
     
@@ -110,6 +120,8 @@ function Home() {
         setTotalPollCount(data[5].totalPollCount)
         setTotalPollOptionCount(data[5].totalPollOptionCount)
 
+        console.log("tweetsData2:-  ------",data[1].tweetsData2)
+
 
         // console.log("Data of 2 ", data[3].opneAifuncall) $$$$$$$$$$$$$$$$
         // setTestIds([])
@@ -135,7 +147,10 @@ function Home() {
     }
 
     const getInput = (e) =>{
-        setUserInput(e.target.value)
+        // setUserInput(e.target.value)
+        console.log(e.target.valu)
+        console.log(selected)
+        setUserInput((selected.join(" OR ")))
     }
 
     const getQuestion = (e) =>{
@@ -151,7 +166,15 @@ function Home() {
         <h2> </h2>
 
         <div className='MainContainer'>
-        <input className='userInput' type="text" onChange={getInput} placeholder='Enter keywords' />
+
+        {/* <input className='userInput' type="text" onChange={getInput} placeholder='Enter keywords' />  Working old input */}
+
+        <div className='inputTagDiv'>
+            <TagsInput classNames={"TagsInput"} value={selected} onChange={setSelected} name="inputTags" separators={[" ", "TAB", ","]}
+            placeHolder="Enter Keywords" 
+            />
+        </div>
+
         {/* **********Questoin for openAI ************** */}
         {/* <input className='userInput' type="text" onChange={getQuestion} placeholder='Enter your question' /> */}
 

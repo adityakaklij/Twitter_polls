@@ -13,6 +13,9 @@
     "react-dom": "^18.2.0",
     "react-loader-spinner": "^5.3.4",
     "react-scripts": "5.0.1",
+    "react-tag-input": "^6.8.1",
+    "react-tag-input-component": "^2.0.2",
+    "react-tagsinput": "^3.20.0",
     "react-twitter-embed": "^4.0.4",
     "web-vitals": "^2.1.4"
   },

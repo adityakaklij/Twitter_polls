@@ -1,34 +1,69 @@
 import React, { useState } from 'react'
-import { Dna } from  'react-loader-spinner'
 
+// import { WithContext as ReactTags } from 'react-tag-input';
+import { TagsInput } from "react-tag-input-component";
+
+
+
+import '../CSS/Home.css'
 
 function Test3() {
-    const[isTrue, setIsTrue] = useState(false)
+  const [tags,setTags] = useState([])
 
-    function change() {
-        setIsTrue(!isTrue)
-    }
-
-    if(isTrue){
-        return(
-            <div>
-       <Dna
-        visible={true}
-        height="80"
-        width="80"
-        ariaLabel="dna-loading"
-        wrapperStyle={{}}
-        wrapperClass="dna-wrapper"
-    />
-    </div>
-        )
-    }
+  const [selected, setSelected] = useState([]);
 
 
+  const KeyCodes = {
+    comma: 188,
+    enter: 13,
+    space: 32,
+  };
+  
+  const delimiters = [KeyCodes.comma, KeyCodes.enter, KeyCodes.space];
+  
+   
+  const handleDelete = i => {
+    setTags(tags.filter((tag, index) => index !== i));
+  };
+
+  const handleAddition = tag => {
+    setTags([...tags, tag]);
+  };
+
+  const handleTagClick = index => {
+    console.log('The tag at index ' + index + ' was clicked');
+  };
+
+  const getInput = (e) =>{
+    console.log(e.target.value)
+  }
+
+  const handleChange = (e) =>{
+    console.log(e.target.value)
+  }
+
+  function printArray() {
+    console.log(selected)
+    console.log((selected.join(" OR ")))
+  }
   return (
     <div>
-       <h2>Nothing</h2>
-       <button onClick={change}>Change</button>
+       <h2>Test 3</h2>
+
+ 
+    
+    <br /><br />
+
+    <TagsInput classNames={"TagsInput"}
+        value={selected}
+        onChange={setSelected}
+        name="fruits"
+        separators={[" ", "TAB", ","]}
+        placeHolder="Enter Keywords"
+      />
+
+      <button onClick={printArray}>printArray</button>
+
     </div>
   )
 }
