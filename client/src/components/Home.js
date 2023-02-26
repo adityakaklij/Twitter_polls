@@ -7,6 +7,7 @@ import { TagsInput } from "react-tag-input-component";
 import '../CSS/Home.css'
 
 let newArray = []
+let newArrayIDs = []
 function Home() {
 
     
@@ -30,21 +31,23 @@ function Home() {
     const [testIds, setTestIds] = useState([])
     const [isTrue, setIsTrue] = useState(false)
     const [responseFromOpenAI, setResponseFromOpenAI] = useState()
-    // const [userPollsType, setUserPollType] = useState("Both")
     const [userPollsType, setUserPollType] = useState("Completed")
     const [totalVotes, setTotalVotes] = useState()
     const [totalPollCount, setTotalPollCount] = useState()
     const [totalPollOptionCount, setTotalPollOptionCount] = useState()
 
     const [showFilters, setShowFilter] = useState(false)
-    const [showFilterText, setShowFilterText] = useState("Show Filter")
+
+    const [individualVoteCount, setIndividualVoteCount] = useState([])
+    const [tweetsFinalData, setTweetsFinalData] = useState([])
+    const [tweetsFinalData2, setTweetsFinalData2] = useState([])
+
 
     // Only true when the polls are rendered! it's for open AI and vote count
     const [isPollsRender, setIsPollRender] = useState(false)
         
         useEffect(() => {
             if(isTrue){
-                // setTestIds([])
                 displayPolls()
             }            
         }, [isTrue, testIds])
@@ -109,22 +112,49 @@ function Home() {
     const displayPolls = async() => {
 
         try {
-            setIsPollRender(true)
+        let sortedTweets = []
+        setIsPollRender(true)
         // console.log("data:- ",data) $$$$$$$$$$$$$$$$
         // console.log("data.tweets:- ",data[0]) $$$$$$$$$$$$$$$$
-        newArray.push(data[0].tweets)
+        // newArray.push(data[0].tweets)
         // setResponseFromOpenAI(` Response From OpneAI: \n ${data[3].opneAifuncall}`)
         // console.log(` totalPollCount:-  ${data[5].totalPollCount}`)
         setTotalVotes(data[5].totalVoteCount)
         setTotalPollCount(data[5].totalPollCount)
         setTotalPollOptionCount(data[5].totalPollOptionCount)
 
-        console.log("tweetsData2:-  ------",data[1].tweetsData2)
+        // console.log("tweetsData2:-  ------",data[1].tweetsData2)
+        console.log("newTweetVoteCount newTweetVoteCount",data[3].newTweetVoteCount)
+        
+        
+        
+        // Need to compair below two arrays.
 
-
-        // console.log("Data of 2 ", data[3].opneAifuncall) $$$$$$$$$$$$$$$$
-        // setTestIds([])
         setTestIds(data[0].tweets)
+        setIndividualVoteCount(data[3].newTweetVoteCount)
+        newArray=[]
+        
+        for (let i = 0; i < testIds.length; i ++){
+
+            newArray.push({"TweetID": testIds[i], "VoteCount": individualVoteCount[i]})
+        }
+        
+        sortedTweets = [...newArray].sort((a, b) => b.VoteCount - a.VoteCount);
+        setTweetsFinalData([]);
+        console.log("New Array: 0 00 0 0 0 ", sortedTweets)
+        newArrayIDs=[]
+        for (let i = 0; i < sortedTweets.length; i ++){
+            newArrayIDs.push(sortedTweets[i].TweetID)
+            setTweetsFinalData(tweetsFinalData => [tweetsFinalData, (sortedTweets[i].TweetID)] ) 
+            console.log("<<<<<<<<<<<<<<<<********", sortedTweets[i].TweetID)
+        }
+        console.log("newArrayIDsnewArrayIDsnewArrayIDs",newArrayIDs)
+        // setTweetsFinalData(newArrayIDs);
+
+        // console.log("tweetsFinalData tweetsFinalData ********", sortedTweets)
+        // console.log("tweetsFinalData tweetsFinalData <<<<<<<<<<<<<<<<********", tweetsFinalData1)
+
+
         // console.log("data:- [0] ",data[0].tweets) $$$$$$$$$$$$$$$$
         setIsLoaderTrue(false)
     
@@ -135,26 +165,7 @@ function Home() {
         
     }
 
-    const askOpenAI = async () => {
-       
-        try {
-            let z = await fetch("/askAI").then(res => res.json()).then(data => {
-                
-                // setData(data)
-                console.log("data:-", data.OpenAIResoponse) //$$$$$$$$$$$$$$$$
-                console.log("Inside the ASK AI func")
-                setResponseFromOpenAI(data.OpenAIResoponse)
-    
-            })
-            console.log("Inside fetch get")
-            
 
-        } catch (error) {
-            alert("Somthing went wrong :( \n Please try later!")
-            console.log(error)
-            setIsLoaderTrue(false)
-        }
-    } 
 
     const askOpenAI2 = async () => {
         setIsLoaderTrue(true)
@@ -219,10 +230,6 @@ function Home() {
 
     const getUserDropDown = (e) =>{
         setUserPollType(e.target.value)
-    }
-
-    const showFiltersFun =  () =>{
-        setShowFilterText("H")
     }
 
   return (
@@ -347,9 +354,12 @@ function Home() {
             ariaLabel="dna-loading"
             wrapperStyle={{}}
             wrapperClass="dna-wrapper"
-        /> :  testIds.map ((testIds) => (
+        /> :  newArrayIDs.map ((newArrayIDs) => (
+                <div key={newArrayIDs}  className='card'>
+                    <TwitterTweetEmbed  tweetId={newArrayIDs}/>
+        {/* /> :  testIds.map ((testIds) => (
                 <div key={testIds}  className='card'>
-                    <TwitterTweetEmbed  tweetId={testIds}/>
+                    <TwitterTweetEmbed  tweetId={testIds}/> */}
                 </div>
             ))}
         </div>

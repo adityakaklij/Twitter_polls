@@ -35,6 +35,8 @@ tweetsData2=[]
 AIConslusion=[]
 limit = 5
 
+# Keep track of votes for each tweetId
+newTweetVoteCount=[]
 userInputs =[]
 userQuestion=[]
 userStartDate=[]
@@ -71,7 +73,7 @@ def members2():
 
                     tweets.append(str(tweet.id))
                     tweetsData.append([tweet.content, tweet.card.options ])
-                    tweetsData2.append([tweet.id, tweet.content, tweet.card.options ])
+                    tweetsData2.append([tweet.id, tweet.content, tweet.card.options, str(tweet.id) ])
 
                     # if((len(tweets) != 0)):
                     #     tweet.replace(str(tweet.id))
@@ -90,7 +92,7 @@ def members2():
                     print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
             else:
                 tweets.append(str(tweet.id))
-                tweetsData.append([tweet.content, tweet.card.options ])
+                tweetsData.append([tweet.content, tweet.card.options ,str(tweet.id)])
                 # print("tweet.card.options", tweet.card.options)
                 print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
@@ -98,6 +100,7 @@ def members2():
     output_strings = []
     totalVoteCount = 0
     totalPollOptionCount  = 0
+    newTweetVoteCount.clear()
     for i, (description, options) in enumerate(tweetsData, start=1):
         option_strings = []
         vote_count=[]
@@ -113,18 +116,21 @@ def members2():
                     
             option_strings.append(option_string)
         options_string = ', '.join(option_strings)
+
+        newTweetVoteCount.append(sum(vote_count))
         if(sum(vote_count) == 0):
             pass
         output_string = f"{i}] {description}\n Options are:- \n {options_string} \n Total:- {sum(vote_count)} Votes \n"
+
         output_strings.append(output_string)
-            
+    print("New test arr^^^^^^^^^^^^^^", newTweetVoteCount)
     final_string = '\n'.join(output_strings)
     # opneAifuncall = openAICall(final_string) #==============================================================THis is main
     # print( "opneAifuncall:- ---------", opneAifuncall) #==============================================================THis is main
 
     newFinalString.append(final_string)
     print("newFinalString ---- -- -- -", newFinalString[0])
-    return [{"tweets": tweets}, {"tweetsData": tweetsData},{"AIConclusion":AIConslusion}, {"opneAifuncall":"opneAifuncall"},
+    return [{"tweets": tweets}, {"tweetsData": tweetsData},{"AIConclusion":AIConslusion}, {"newTweetVoteCount":newTweetVoteCount},
             {"chatGPTAns":chatGPTAns}, {"totalVoteCount":totalVoteCount, "totalPollCount": limit, "totalPollOptionCount": totalPollOptionCount},
             {"tweetsData2":tweetsData2}]
 
