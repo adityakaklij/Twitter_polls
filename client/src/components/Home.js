@@ -56,7 +56,7 @@ function Home() {
         try {
             let z = await fetch("/members2").then(res => res.json()).then(data => {
                 setData(data)
-                console.log("data:-", data) //$$$$$$$$$$$$$$$$
+                // console.log("data:-", data) //$$$$$$$$$$$$$$$$
     
             })
             console.log("Inside fetch get")
@@ -124,7 +124,7 @@ function Home() {
         setTotalPollOptionCount(data[5].totalPollOptionCount)
 
         // console.log("tweetsData2:-  ------",data[1].tweetsData2)
-        console.log("newTweetVoteCount newTweetVoteCount",data[3].newTweetVoteCount)
+        // console.log("newTweetVoteCount newTweetVoteCount",data[3].newTweetVoteCount)
         
         
         
@@ -146,9 +146,9 @@ function Home() {
         for (let i = 0; i < sortedTweets.length; i ++){
             newArrayIDs.push(sortedTweets[i].TweetID)
             setTweetsFinalData(tweetsFinalData => [tweetsFinalData, (sortedTweets[i].TweetID)] ) 
-            console.log("<<<<<<<<<<<<<<<<********", sortedTweets[i].TweetID)
+            // console.log("<<<<<<<<<<<<<<<<********", sortedTweets[i].TweetID)
         }
-        console.log("newArrayIDsnewArrayIDsnewArrayIDs",newArrayIDs)
+        // console.log("newArrayIDsnewArrayIDsnewArrayIDs",newArrayIDs)
         // setTweetsFinalData(newArrayIDs);
 
         // console.log("tweetsFinalData tweetsFinalData ********", sortedTweets)
@@ -189,8 +189,8 @@ function Home() {
                 
                 // setData(data)
                 setIsLoaderTrue(false)
-                console.log("data:-", data.OpenAIResoponse) //$$$$$$$$$$$$$$$$
-                console.log("Printing it!")
+                // console.log("data:-", data.OpenAIResoponse) //$$$$$$$$$$$$$$$$
+                // console.log("Printing it!")
                 setResponseFromOpenAI(data.OpenAIResoponse)
     
             })
@@ -209,12 +209,12 @@ function Home() {
 
     const startDateInput = (e) =>{
         setUserStartDate(e.target.value)
-        console.log(e.target.value)
+        // console.log(e.target.value)
     }
     
     const endDateInput = (e) =>{
         setUserEndDate(e.target.value)
-        console.log(e.target.value)
+        // console.log(e.target.value)
     }
 
     const getInput = (e) =>{
