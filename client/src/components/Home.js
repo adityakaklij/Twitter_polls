@@ -284,7 +284,7 @@ function Home() {
             {isPollsRender ? 
                 <div> 
                     <div className='ResponsePara my-5'>  
-                        <p>Total Votes:- {totalVotes} </p> 
+                        <p> Total Votes:- {totalVotes}</p> 
                         <p>Total Polls:- {totalPollCount}</p>    
                         <p>Total Options:- {totalPollOptionCount}</p>    
                     </div> 
