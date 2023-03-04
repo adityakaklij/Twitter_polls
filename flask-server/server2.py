@@ -33,7 +33,7 @@ tweets =[]
 tweetsData=[]
 tweetsData2=[]
 AIConslusion=[]
-limit = 50
+limit = 10
 
 # Keep track of votes for each tweetId
 newTweetVoteCount=[]
@@ -117,21 +117,21 @@ def members2():
 
         newTweetVoteCount.append(sum(vote_count))
         # if(sum(vote_count) == 0):
-        if(sum(vote_count) >= 25):
-            output_string = f"{i}] {description}\n Options are:- \n {options_string} \n Total:- {sum(vote_count)} Votes \n"
-            output_strings.append(output_string)
-        else:
-            pass
+        # if(sum(vote_count) >= 25):
+        output_string = f"{i}] {description}\n Options are:- \n {options_string} \n Total:- {sum(vote_count)} Votes \n"
+        output_strings.append(output_string)
+        # else:
+        #     pass
     print("New test arr^^^^^^^^^^^^^^", newTweetVoteCount)
     final_string = '\n'.join(output_strings)
     print("print(m[:1500])print(m[:1500])print(m[:1500])", final_string)
     # opneAifuncall = openAICall(final_string) #==============================================================THis is main
     # print( "opneAifuncall:- ---------", opneAifuncall) #==============================================================THis is main
-
+    newFinalString.clear()
     newFinalString.append(final_string)
     print("newFinalString ---- -- -- -", newFinalString[0])
-    return [{"tweets": tweets}, {"tweetsData": tweetsData},{"AIConclusion":AIConslusion}, {"newTweetVoteCount":newTweetVoteCount},
-            {"chatGPTAns":chatGPTAns}, {"totalVoteCount":totalVoteCount, "totalPollCount": limit, "totalPollOptionCount": totalPollOptionCount},
+    return [{"tweets": tweets}, {"tweetsData": tweetsData},{"AIConclusion":"AIConslusion"}, {"newTweetVoteCount":newTweetVoteCount},
+            {"chatGPTAns":"chatGPTAns"}, {"totalVoteCount":totalVoteCount, "totalPollCount": limit, "totalPollOptionCount": totalPollOptionCount},
             {"tweetsData2":tweetsData2}]
 
 
@@ -184,6 +184,13 @@ def askAI2():
 
     return {"OpenAIResoponse": inputFromUser['userQue']}
 
+@app.route('/askAI3', methods=["GET"])
+def askAI3():
+    print("Inside the askAI2 func")
+    
+
+    return {"OpenAIResoponse": 'userQue'}
+
 
 def openAICall(userQue):
     print("We are Inside the openAICall function")
@@ -193,15 +200,16 @@ def openAICall(userQue):
     # prompt=[f"Analyse following poll data and on basis of this analysis the current situation of the crypto market and crypto conditions \n {userQue}"]
     # prompt=[f"{userQuestion[0]} \n {userQue}"]
     # prompt=[f" Analysis the following data \n {userQue}"]
-    prompt=[f"{userQue}:- {(newFinalString[0])[:1500]}"]
-    
+    prompt=f"{userQue}:- {[(newFinalString[0])[:1500]]}"
+    # prompt = "How is crypto market is performing currently?"
+    print("prompt0))))))))))))))))))))))))))))))",prompt)
     completion = openai.Completion.create(
         engine=model_engin,
         prompt=prompt,
         max_tokens=1024,
         n=1,
-        stop=None,
-        temperature=0.5,
+        # stop=None,
+        temperature=0,
     )
 
     response = completion.choices[0].text

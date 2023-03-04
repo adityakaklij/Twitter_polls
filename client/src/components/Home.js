@@ -191,6 +191,7 @@ function Home() {
                 setIsLoaderTrue(false)
                 // console.log("data:-", data.OpenAIResoponse) //$$$$$$$$$$$$$$$$
                 // console.log("Printing it!")
+                setResponseFromOpenAI("")
                 setResponseFromOpenAI(data.OpenAIResoponse)
     
             })
